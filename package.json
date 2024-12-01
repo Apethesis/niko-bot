@@ -1,0 +1,23 @@
+{
+  "name": "niko-bot",
+  "version": "1.0.0",
+  "description": " The waste of space selfbot, Niko-Bot! ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Apethesis/niko-bot.git"
+  },
+  "author": "Compec",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Apethesis/niko-bot/issues"
+  },
+  "homepage": "https://github.com/Apethesis/niko-bot#readme",
+  "dependencies": {
+    "discord.js-selfbot-v13": "^3.4.5",
+    "dotenv": "^16.4.5"
+  }
+}
