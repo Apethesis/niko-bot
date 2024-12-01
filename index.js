@@ -3,15 +3,19 @@ const { Client } = require('discord.js-selfbot-v13');
 const fs = require('fs');
 const path = require('node:path');
 const client = new Client();
-const playlist = []
-const playfiles = fs.readdirSync(path.join(__dirname,'playlist'))
 let currentpos = 0
 let song
-for (const file of playfiles) {
-    playlist[currentpos] = path.join(path.join(__dirname,'playlist'),file)
-    currentpos = currentpos + 1;
+let playlist = []
+function readfiles() {
+    const playfiles = fs.readdirSync(path.join(__dirname,'playlist'))
+    playlist = []
+    for (const file of playfiles) {
+        playlist[currentpos] = path.join(path.join(__dirname,'playlist'),file)
+        currentpos = currentpos + 1;
+    }
+    currentpos = 0
 }
-currentpos = 0
+readfiles()
 function oshuffle(array) {
     let currentIndex = array.length;
   
@@ -45,7 +49,7 @@ function playnew() {
     })
 }
 shuffle()
-client.on('ready', (cl) => {
+client.once('ready', (cl) => {
     cl.voice.joinChannel('616089055532417044').then((con) => {
         song = con.playAudio(playlist[0], { volume: 0.25 })
         client.user.setPresence({ activities: [{ name: path.basename(playlist[0]), type: 'PLAYING' }]})
@@ -56,5 +60,20 @@ client.on('ready', (cl) => {
             }
         })
     })
+})
+client.on('messageCreate', (msg) => {
+    if (msg.author.id == '939920548484497451' || msg.author.id == '1168868176189198418' || msg.author.id == '665113328577806336') {
+        if (msg.content == '>skipsong') {
+            song.pause()
+            msg.reply('Skipped song.')
+        } else if (msg.content == '>refreshlist') {
+            readfiles()
+            msg.reply('Refreshed file list.')
+        } else if (msg.content == '>shuffle') {
+            shuffle()
+            song.pause()
+            msg.reply('Shuffled list and skipped current song.')
+        }
+    }
 })
 client.login(process.env.DTOK)
