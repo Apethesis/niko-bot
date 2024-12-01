@@ -7,6 +7,20 @@ const client = new Client();
 let currentpos = 0
 let song
 let playlist = []
+let quitit = false
+const auth = {
+    channel: [
+        '662095345366335518',
+        '949506704926728202'
+    ],
+    user: [
+        '939920548484497451',
+        '1168868176189198418',
+        '665113328577806336',
+        '825476927284445254',
+        '591647452247883806'
+    ]
+}
 function readfiles() {
     const playfiles = fs.readdirSync(path.join(__dirname,'playlist'))
     playlist = []
@@ -37,17 +51,20 @@ function shuffle() {
     oshuffle(playlist)
 }
 function playnew() {
+    console.log(playlist[currentpos])
     song = client.voice.connection.playAudio(playlist[currentpos], { volume: 0.25 })
     client.user.setPresence({ activities: [{ name: path.basename(playlist[currentpos]), type: 'PLAYING' }]})
     currentpos = currentpos + 1;
     if (currentpos > playlist.length) {
         shuffle()
     }
-    song.on('speaking', (which) => {
-        if (which == false) {
-            playnew()
-        }
-    })
+    if (!quitit) {
+        song.on('speaking', (which) => {
+            if (which == false) {
+                playnew()
+            }
+        })
+    }
 }
 shuffle()
 client.once('ready', (cl) => {
@@ -55,15 +72,17 @@ client.once('ready', (cl) => {
         song = con.playAudio(playlist[0], { volume: 0.25 })
         client.user.setPresence({ activities: [{ name: path.basename(playlist[0]), type: 'PLAYING' }]})
         currentpos = currentpos + 1
-        song.on('speaking', (which) => {
-            if (which == false) {
-                playnew()
-            }
-        })
+        if (!quitit) {
+            song.on('speaking', (which) => {
+                if (which == false) {
+                    playnew()
+                }
+            })
+        }
     })
 })
 client.on('messageCreate', (msg) => {
-    if (msg.author.id == '939920548484497451' || msg.author.id == '1168868176189198418' || msg.author.id == '665113328577806336' || msg.author.id == '825476927284445254' || msg.author.id == '591647452247883806') {
+    if (auth.user.includes(msg.author.id) && auth.channel.includes(msg.channel.id)) {
         if (msg.content == '>skipsong') {
             song.pause()
             msg.reply('Skipped song.')
@@ -84,6 +103,25 @@ client.on('messageCreate', (msg) => {
                 readfiles()
                 msg.reply('Pulled from github and read new files. Consider shuffling.')
             })
+        } else if (msg.content == ">pause") {
+            quitit = true
+            song.pause()
+            msg.reply('This song will not continue the playlist after it.')
+        } else if (msg.content == ">resume") {
+            quitit = false
+            playnew()
+            msg.reply('Resumed.')
+        } else if (msg.content.startsWith(">playvideo")) {
+            if (!quitit) {
+                msg.reply('This feature requires the playlist to be paused.')
+            } else {
+                try {
+                    client.voice.connection.playVideo(msg.content.substring(11))
+                    msg.reply("Attempted to play video, please wait...")
+                } catch (error) {
+                    msg.channel.send('Errored! Potentially an invalid link?')
+                }
+            }
         }
     }
 })
