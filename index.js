@@ -142,7 +142,11 @@ client.on('messageCreate', (msg) => {
         } else if (msg.content == '>connect') {
             cl.voice.joinChannel('616089055532417044')
             msg.reply('Reconnected to channel.')
-        } 
+        } else if (msg.content == ">killvideo") {
+            streamer.stopStream()
+            streamer.leaveVoice()
+            msg.reply('Left voice channel due to killvideo command, use >connect to add me back.')
+        }
     }
 })
 client.login(process.env.DTOK)
