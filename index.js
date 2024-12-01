@@ -1,11 +1,15 @@
 require('dotenv').config();
 const { Client } = require('discord.js-selfbot-v13');
+const { Streamer, streamLivestreamVideo } = require('@dank074/discord-video-stream')
 const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('node:path');
 const client = new Client();
+const streamer = new Streamer(client)
+let streamercon
 let currentpos = 0
 let song
+let vid
 let playlist = []
 let quitit = false
 const auth = {
@@ -116,13 +120,29 @@ client.on('messageCreate', (msg) => {
                 msg.reply('This feature requires the playlist to be paused.')
             } else {
                 try {
-                    client.voice.connection.playVideo(msg.content.substring(11))
+                    client.voice.connection.disconnect()
+                    streamer.joinVoice('616089055532417036','616089055532417044').then((rudp) => {
+                        streamercon = rudp
+                        streamer.createStream({ hardwareAcceleratedDecoding: true, width: 1920, height: 1080, bitrateKbps: 4000, maxBitrateKbps: 4000, }).then((udp) => {
+                            udp.mediaConnection.setSpeaking(true)
+                            udp.mediaConnection.setVideoStatus(true)
+                            streamLivestreamVideo(msg.content.substring(11),udp,true).then(() => {
+                                udp.mediaConnection.setSpeaking(false)
+                                udp.mediaConnection.setVideoStatus(false)
+                                streamer.leaveVoice()
+                                msg.channel.send('Left voice channel due to end of video, use >connect to add me back.')
+                            })
+                        })
+                    })
                     msg.reply("Attempted to play video, please wait...")
                 } catch (error) {
                     msg.channel.send('Errored! Potentially an invalid link?')
                 }
             }
-        }
+        } else if (msg.content == '>connect') {
+            cl.voice.joinChannel('616089055532417044')
+            msg.reply('Reconnected to channel.')
+        } 
     }
 })
 client.login(process.env.DTOK)
