@@ -49,6 +49,7 @@ client.on('ready', (cl) => {
     cl.voice.joinChannel('616089055532417044').then((con) => {
         song = con.playAudio(playlist[0], { volume: 0.25 })
         client.user.setPresence({ activities: [{ name: path.basename(playlist[0]), type: 'PLAYING' }]})
+        currentpos = currentpos + 1
         song.on('speaking', (which) => {
             if (which == false) {
                 playnew()
