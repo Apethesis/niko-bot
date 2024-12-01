@@ -62,7 +62,7 @@ client.once('ready', (cl) => {
     })
 })
 client.on('messageCreate', (msg) => {
-    if (msg.author.id == '939920548484497451' || msg.author.id == '1168868176189198418' || msg.author.id == '665113328577806336') {
+    if (msg.author.id == '939920548484497451' || msg.author.id == '1168868176189198418' || msg.author.id == '665113328577806336' || msg.author.id == '825476927284445254' || msg.author.id == '591647452247883806') {
         if (msg.content == '>skipsong') {
             song.pause()
             msg.reply('Skipped song.')
