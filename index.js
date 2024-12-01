@@ -73,6 +73,10 @@ client.on('messageCreate', (msg) => {
             shuffle()
             song.pause()
             msg.reply('Shuffled list and skipped current song.')
+        } else if (msg.content == '>restartsong') {
+            currentpos--
+            song.pause()
+            msg.reply('Restarted current song.')
         }
     }
 })
