@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { Client } = require('discord.js-selfbot-v13');
+const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('node:path');
 const client = new Client();
@@ -77,6 +78,12 @@ client.on('messageCreate', (msg) => {
             currentpos--
             song.pause()
             msg.reply('Restarted current song.')
+        } else if (msg.content == '>gitrefresh') {
+            const git = spawn('git', ['pull'])
+            git.on('close', (code) => {
+                readfiles()
+                msg.reply('Pulled from github and read new files. Consider shuffling.')
+            })
         }
     }
 })
