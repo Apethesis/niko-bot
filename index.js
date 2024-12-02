@@ -131,7 +131,7 @@ client.on('messageCreate', (msg) => {
                         streamer.createStream({ width: 1920, height: 1080, bitrateKbps: 4000, maxBitrateKbps: 4000, videoCodec: "H264", h26xPreset: 'veryfast' }).then((udp) => {
                             udp.mediaConnection.setSpeaking(true)
                             udp.mediaConnection.setVideoStatus(true)
-                            open('playlist/war.mp4').then((fl) => {
+                            fs.open('playlist/war.mp4', 'r').then((fl) => {
                                 const fls = new stream.Readable().wrap(fs.createReadStream(fl))
                                 streamLivestreamVideo(fls,udp,true).then(() => {
                                     udp.mediaConnection.setSpeaking(false)
