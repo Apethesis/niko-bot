@@ -131,14 +131,11 @@ client.on('messageCreate', (msg) => {
                         streamer.createStream({ width: 1920, height: 1080, bitrateKbps: 4000, maxBitrateKbps: 4000, videoCodec: "H264", h26xPreset: 'veryfast' }).then((udp) => {
                             udp.mediaConnection.setSpeaking(true)
                             udp.mediaConnection.setVideoStatus(true)
-                            fs.open('playlist/war.mp4', 'r').then((fl) => {
-                                const fls = new stream.Readable().wrap(fs.createReadStream(fl))
-                                streamLivestreamVideo(fls,udp,true).then(() => {
-                                    udp.mediaConnection.setSpeaking(false)
-                                    udp.mediaConnection.setVideoStatus(false)
-                                    streamer.leaveVoice()
-                                    msg.channel.send('Left voice channel due to end of video, use >connect to add me back.')
-                                })
+                            streamLivestreamVideo(msg.content.substring(11),udp,true).then(() => {
+                                udp.mediaConnection.setSpeaking(false)
+                                udp.mediaConnection.setVideoStatus(false)
+                                streamer.leaveVoice()
+                                msg.channel.send('Left voice channel due to end of video, use >connect to add me back.')
                             })
                         })
                     })
