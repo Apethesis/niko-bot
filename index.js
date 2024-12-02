@@ -157,7 +157,7 @@ client.on('messageCreate', (msg) => {
             let ostr = "Current queue:\n"
             let incr = 1
             for (const song in playlist) {
-                ostr = ostr+`${incr}. ${song}\n`
+                ostr = ostr+`${incr}. ${playlist[song]}\n`
                 incr = incr + 1
             }
             msg.reply(ostr)
