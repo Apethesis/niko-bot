@@ -75,7 +75,7 @@ function playnew() {
 shuffle()
 client.once('ready', (cl) => {
     cl.voice.joinChannel('616089055532417044').then((con) => {
-        song = con.playAudio(playlist[0], { volume: 0.25 })
+        song = con.playAudio(playlist[0], { volume: 0.5 })
         client.user.setPresence({ activities: [{ name: path.basename(playlist[0]), type: 'PLAYING' }]})
         currentpos = currentpos + 1
         if (!quitit) {
@@ -122,7 +122,7 @@ client.on('messageCreate', (msg) => {
                 msg.reply('This feature requires the playlist to be paused.')
             } else {
                 try {
-                    client.voice.connection.disconnect()
+                    if (client.voice.connection) { client.voice.connection.disconnect(); }
                     streamer.joinVoice('616089055532417036','616089055532417044').then((rudp) => {
                         streamercon = rudp
                         streamer.createStream({ hardwareAcceleratedDecoding: true, width: 1920, height: 1080, fps: 60 ,bitrateKbps: 4000, maxBitrateKbps: 4000 }).then((udp) => {
