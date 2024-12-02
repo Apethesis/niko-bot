@@ -161,7 +161,7 @@ client.on('messageCreate', (msg) => {
                 if (incr < currentpos) {
                     incr = incr + 1
                 } else if (vincr <= 10) {
-                    ostr = ostr+`${vincr}. ${playlist[song]}\n`
+                    ostr = ostr+`${vincr}. ${path.basename(playlist[song])}\n`
                     incr = incr + 1
                     vincr = vincr + 1
                 }
