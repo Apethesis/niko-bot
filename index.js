@@ -156,9 +156,15 @@ client.on('messageCreate', (msg) => {
         } else if (msg.content == '>queue') {
             let ostr = "Current queue:\n"
             let incr = 1
+            let vincr = 1
             for (const song in playlist) {
-                ostr = ostr+`${incr}. ${playlist[song]}\n`
-                incr = incr + 1
+                if (incr < currentpos) {
+                    incr = incr + 1
+                } else {
+                    ostr = ostr+`${vincr}. ${playlist[song]}\n`
+                    incr = incr + 1
+                    vincr = vincr + 1
+                }
             }
             msg.reply(ostr)
         }
