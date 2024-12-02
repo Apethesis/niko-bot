@@ -160,7 +160,7 @@ client.on('messageCreate', (msg) => {
             for (const song in playlist) {
                 if (incr < currentpos) {
                     incr = incr + 1
-                } else {
+                } else if (vincr <= 10) {
                     ostr = ostr+`${vincr}. ${playlist[song]}\n`
                     incr = incr + 1
                     vincr = vincr + 1
