@@ -172,6 +172,7 @@ client.on('messageCreate', (msg) => {
             const volu = Number(msg.content.substring(8))
             song.setVolume(volu)
             volume = volu
+            msg.reply(`Set volume to ${volu}.`)
         }
     }
 })
