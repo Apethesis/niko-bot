@@ -168,7 +168,7 @@ client.on('messageCreate', (msg) => {
                 }
             }
             msg.reply(ostr)
-        } else if (msg.content == '>volume') {
+        } else if (msg.content.startsWith('>volume')) {
             const volu = Number(msg.content.substring(8))
             song.setVolume(volu)
             volume = volu
