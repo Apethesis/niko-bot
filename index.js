@@ -153,6 +153,14 @@ client.on('messageCreate', (msg) => {
             msg.reply("Killing process, goodbye! (temporarily)").then(() => {
                 process.exit()
             })
+        } else if (msg.content == '>queue') {
+            let ostr = "Current queue:\n"
+            let incr = 1
+            for (const song in playlist) {
+                ostr = ostr+`${incr}. ${song}\n`
+                incr = incr + 1
+            }
+            msg.reply(ostr)
         }
     }
 })
