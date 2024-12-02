@@ -125,7 +125,7 @@ client.on('messageCreate', (msg) => {
                     client.voice.connection.disconnect()
                     streamer.joinVoice('616089055532417036','616089055532417044').then((rudp) => {
                         streamercon = rudp
-                        streamer.createStream({ hardwareAcceleratedDecoding: true, width: 1920, height: 1080, bitrateKbps: 4000, maxBitrateKbps: 4000, }).then((udp) => {
+                        streamer.createStream({ hardwareAcceleratedDecoding: true, width: 1920, height: 1080, fps: 60 ,bitrateKbps: 4000, maxBitrateKbps: 4000 }).then((udp) => {
                             udp.mediaConnection.setSpeaking(true)
                             udp.mediaConnection.setVideoStatus(true)
                             streamLivestreamVideo(msg.content.substring(11),udp,true).then(() => {
@@ -138,7 +138,8 @@ client.on('messageCreate', (msg) => {
                     })
                     msg.reply("Attempted to play video, please wait...")
                 } catch (error) {
-                    msg.channel.send('Errored! Potentially an invalid link?')
+                    msg.channel.send('Errored! Potentially an invalid link? (CHECK LOGS)')
+                    console.log(error)
                 }
             }
         } else if (msg.content == '>connect') {
