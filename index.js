@@ -2,6 +2,7 @@ require('dotenv').config();
 const { Client } = require('discord.js-selfbot-v13');
 const { Streamer, streamLivestreamVideo } = require('@dank074/discord-video-stream')
 const { spawn } = require('child_process');
+const process = require('node:process')
 const fs = require('fs');
 const path = require('node:path');
 const client = new Client();
@@ -146,6 +147,8 @@ client.on('messageCreate', (msg) => {
             streamer.stopStream()
             streamer.leaveVoice()
             msg.reply('Left voice channel due to killvideo command, use >connect to add me back.')
+        } else if (msg.content == '>kill' && msg.author.id == '1168868176189198418') {
+            process.exit()
         }
     }
 })
