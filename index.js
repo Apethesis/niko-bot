@@ -3,6 +3,8 @@ const { Client } = require('discord.js-selfbot-v13');
 const { Streamer, streamLivestreamVideo } = require('@dank074/discord-video-stream')
 const { spawn } = require('child_process');
 const { open } = require('node:fs/promises');
+const YTDlpWrap = require('yt-dlp-wrap').default;
+const ytDlpWrap = new YTDlpWrap('yt-dlp');
 const stream = require('stream')
 const process = require('node:process')
 const fs = require('fs');
@@ -127,11 +129,24 @@ client.on('messageCreate', (msg) => {
                 try {
                     if (client.voice.connection) { client.voice.connection.disconnect(); }
                     streamer.joinVoice('616089055532417036','616089055532417044').then((rudp) => {
+                        let output
                         streamercon = rudp
-                        streamer.createStream({ width: 1920, height: 1080, bitrateKbps: 4000, maxBitrateKbps: 4000, videoCodec: "H264", h26xPreset: 'veryfast' }).then((udp) => {
+                        streamer.createStream({ hardwareAcceleratedDecoding: true, width: 1920, height: 1080, bitrateKbps: 4000, maxBitrateKbps: 4000, videoCodec: "H264", h26xPreset: 'ultrafast' }).then((udp) => {
                             udp.mediaConnection.setSpeaking(true)
                             udp.mediaConnection.setVideoStatus(true)
-                            streamLivestreamVideo(msg.content.substring(11),udp,true).then(() => {
+                            if (msg.content.substring(11).includes('youtube') || msg.content.substring(11).includes('youtu.be')) {
+                                const nononononononononononono = ytDlpWrap.execStream([
+                                    'https://www.youtube.com/watch?v='+msg.content.substring(17),
+                                    '-f',
+                                    'best[ext=mp4]'
+                                ])
+                                console.log(nononononononononononono)
+                                output = nononononononononononono
+                            } else {
+                                output = msg.content.substring(11)
+                            }
+                            console.log(output)
+                            streamLivestreamVideo(output,udp,true).then(() => {
                                 udp.mediaConnection.setSpeaking(false)
                                 udp.mediaConnection.setVideoStatus(false)
                                 streamer.leaveVoice()
