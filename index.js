@@ -80,7 +80,7 @@ client.once('ready', (cl) => {
         currentpos = currentpos + 1
         if (!quitit) {
             song.on('speaking', (which) => {
-                if (which == false) {
+                if (which == false && !quitit) {
                     playnew()
                 }
             })
