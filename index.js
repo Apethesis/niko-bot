@@ -8,6 +8,7 @@ const path = require('node:path');
 const client = new Client();
 const streamer = new Streamer(client)
 let streamercon
+let volume = 0.5
 let currentpos = 0
 let song
 let vid
@@ -58,7 +59,7 @@ function shuffle() {
 }
 function playnew() {
     console.log(playlist[currentpos])
-    song = client.voice.connection.playAudio(playlist[currentpos], { volume: 0.5 })
+    song = client.voice.connection.playAudio(playlist[currentpos], { volume: volume })
     client.user.setPresence({ activities: [{ name: path.basename(playlist[currentpos]), type: 'PLAYING' }]})
     currentpos = currentpos + 1;
     if (currentpos > playlist.length) {
@@ -75,7 +76,7 @@ function playnew() {
 shuffle()
 client.once('ready', (cl) => {
     cl.voice.joinChannel('616089055532417044').then((con) => {
-        song = con.playAudio(playlist[0], { volume: 0.5 })
+        song = con.playAudio(playlist[0], { volume: volume })
         client.user.setPresence({ activities: [{ name: path.basename(playlist[0]), type: 'PLAYING' }]})
         currentpos = currentpos + 1
         if (!quitit) {
@@ -167,6 +168,10 @@ client.on('messageCreate', (msg) => {
                 }
             }
             msg.reply(ostr)
+        } else if (msg.content == '>volume') {
+            const volu = Number(msg.content.substring(8))
+            song.setVolume(volu)
+            volume = volu
         }
     }
 })
