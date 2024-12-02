@@ -148,7 +148,9 @@ client.on('messageCreate', (msg) => {
             streamer.leaveVoice()
             msg.reply('Left voice channel due to killvideo command, use >connect to add me back.')
         } else if (msg.content == '>kill' && msg.author.id == '1168868176189198418') {
-            process.exit()
+            msg.reply("Killing process, goodbye! (temporarily)").then(() => {
+                process.exit()
+            })
         }
     }
 })
