@@ -57,7 +57,7 @@ function shuffle() {
 }
 function playnew() {
     console.log(playlist[currentpos])
-    song = client.voice.connection.playAudio(playlist[currentpos], { volume: 0.25 })
+    song = client.voice.connection.playAudio(playlist[currentpos], { volume: 0.5 })
     client.user.setPresence({ activities: [{ name: path.basename(playlist[currentpos]), type: 'PLAYING' }]})
     currentpos = currentpos + 1;
     if (currentpos > playlist.length) {
