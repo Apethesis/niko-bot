@@ -2,6 +2,7 @@ require('dotenv').config();
 const { Client } = require('discord.js-selfbot-v13');
 const { Streamer, streamLivestreamVideo } = require('@dank074/discord-video-stream')
 const { spawn } = require('child_process');
+const { open } = require('node:fs/promises');
 const process = require('node:process')
 const fs = require('fs');
 const path = require('node:path');
@@ -129,7 +130,15 @@ client.on('messageCreate', (msg) => {
                         streamer.createStream({ width: 1920, height: 1080, bitrateKbps: 4000, maxBitrateKbps: 4000, videoCodec: "H264", h26xPreset: 'veryfast' }).then((udp) => {
                             udp.mediaConnection.setSpeaking(true)
                             udp.mediaConnection.setVideoStatus(true)
-                            streamLivestreamVideo(msg.content.substring(11),udp,true)
+                            open('playlist/war.mp4').then((fl) => {
+                                const fls = new stream.Readable().wrap(fs.createReadStream(fl))
+                                streamLivestreamVideo(fls,udp,true).then(() => {
+                                    udp.mediaConnection.setSpeaking(false)
+                                    udp.mediaConnection.setVideoStatus(false)
+                                    streamer.leaveVoice()
+                                    msg.channel.send('Left voice channel due to end of video, use >connect to add me back.')
+                                })
+                            })
                         })
                     })
                     msg.reply("Attempted to play video, please wait...")
