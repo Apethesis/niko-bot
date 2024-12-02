@@ -132,10 +132,7 @@ client.on('messageCreate', (msg) => {
                             udp.mediaConnection.setSpeaking(true)
                             udp.mediaConnection.setVideoStatus(true)
                             open('playlist/war.mp4').then((fl) => {
-                                const fls = new stream.Readable()
-                                fls._read = () => {} // Required implementation
-                                fls.push(fs.readFileSync(fl))
-                                fls.push(null) // Signal end of stream
+                                const fls = new stream.Readable().wrap(fs.createReadStream(fl))
                                 streamLivestreamVideo(fls,udp,true).then(() => {
                                     udp.mediaConnection.setSpeaking(false)
                                     udp.mediaConnection.setVideoStatus(false)
