@@ -126,7 +126,7 @@ client.on('messageCreate', (msg) => {
                     if (client.voice.connection) { client.voice.connection.disconnect(); }
                     streamer.joinVoice('616089055532417036','616089055532417044').then((rudp) => {
                         streamercon = rudp
-                        streamer.createStream({ width: 1920, height: 1080, fps: 60 ,bitrateKbps: 4000, maxBitrateKbps: 4000 }).then((udp) => {
+                        streamer.createStream({ width: 1920, height: 1080 ,bitrateKbps: 4000, maxBitrateKbps: 4000 }).then((udp) => {
                             udp.mediaConnection.setSpeaking(true)
                             udp.mediaConnection.setVideoStatus(true)
                             streamLivestreamVideo(msg.content.substring(11),udp,true).then(() => {
