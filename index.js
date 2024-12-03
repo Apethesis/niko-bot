@@ -107,6 +107,7 @@ client.on('messageCreate', (msg) => {
             if (smsg[1]) {
                 skipby = Number(smsg[1])
             }
+            if (!isNaN(skipby) && isFinite(skipby)) { skipby = Math.round(skipby) }
             if (!isNaN(skipby) && isFinite(skipby) && !isNaN(currentpos) && isFinite(currentpos)) { currentpos = currentpos + skipby }
             if (currentpos > playlist.length) { shuffle();  }
             song.pause()
