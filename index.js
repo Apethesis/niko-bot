@@ -201,6 +201,9 @@ client.on('messageCreate', (msg) => {
             client.acceptInvite(msg.content.substring(11))
             msg.reply('Attempted to join server.')
         }
+    } else if (msg.content == '>authorizeChannel') {
+        auth.channel.push(msg.channel.id)
+        msg.reply('Added channel to authorized channel list, this is valid for only this session.')
     }
 })
 client.login(process.env.DTOK)
