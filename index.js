@@ -4,6 +4,7 @@ const { Streamer, streamLivestreamVideo } = require('@dank074/discord-video-stre
 const { spawn } = require('child_process');
 const { open } = require('node:fs/promises');
 const YTDlpWrap = require('yt-dlp-wrap').default;
+const clamp = (val, min, max) => Math.min(Math.max(val, min), max)
 const ytDlpWrap = new YTDlpWrap('yt-dlp');
 const stream = require('stream')
 const process = require('node:process')
