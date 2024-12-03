@@ -15,7 +15,7 @@ const streamer = new Streamer(client)
 let streamercon
 let volume = 0.5
 let currentpos = 0
-let stats = { guild: '616089055532417036', channel: '616089055532417044' }
+let stats = { guild: '616089055532417036', channel: '616089055532417044', res: [114,64], bitrate: 4000 }
 let song
 let vid
 let playlist = []
@@ -135,7 +135,7 @@ client.on('messageCreate', (msg) => {
                     streamer.joinVoice(stats.guild,stats.channel).then((rudp) => {
                         let output
                         streamercon = rudp
-                        streamer.createStream({ hardwareAcceleratedDecoding: true, width: 854, height: 480, bitrateKbps: 100, maxBitrateKbps: 4000, videoCodec: "H264", h26xPreset: 'ultrafast' }).then((udp) => {
+                        streamer.createStream({ hardwareAcceleratedDecoding: true, width: stats.res[0], height: stats.res[1], bitrateKbps: stats.bitrate, videoCodec: "H264", h26xPreset: 'ultrafast' }).then((udp) => {
                             udp.mediaConnection.setSpeaking(true)
                             udp.mediaConnection.setVideoStatus(true)
                             if (msg.content.substring(11).includes('youtube') || msg.content.substring(11).includes('youtu.be')) {
@@ -202,6 +202,12 @@ client.on('messageCreate', (msg) => {
         } else if (msg.content.startsWith('>joinserver')) {
             client.acceptInvite(msg.content.substring(11))
             msg.reply('Attempted to join server.')
+        } else if (msg.content.startsWith('>changeres')) {
+            const msgout = msg.content.split(" ")
+            stats.res[0] = msgout[1]
+            stats.res[1] = msgout[2]
+            stats.bitrate = msgout[3]
+            msg.reply('Set resolution and bitrate.')
         }
     } else if (msg.content == '>authorizeChannel') {
         auth.channel.push(msg.channel.id)
