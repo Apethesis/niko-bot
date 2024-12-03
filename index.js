@@ -15,11 +15,13 @@ const streamer = new Streamer(client)
 let streamercon
 let volume = 0.5
 let currentpos = 0
-let stats = { guild: '616089055532417036', channel: '616089055532417044', res: [114,64], bitrate: 4000, audioBitrate: 128 }
+let stats = { guild: '616089055532417036', channel: '616089055532417044', res: [114,64], bitrate: 64 }
 let song
 let vid
 let playlist = []
 let quitit = false
+let queueing = false 
+let queue = []
 const auth = {
     channel: [
         '662095345366335518',
@@ -140,6 +142,8 @@ client.on('messageCreate', (msg) => {
         } else if (msg.content.startsWith(">playvideo")) {
             if (!quitit) {
                 msg.reply('This feature requires the playlist to be paused.')
+            } else if (queueing) {
+                msg.reply('This command is disabled while stream queueing is active, use >add instead.')
             } else {
                 try {
                     if (client.voice.connection) { client.voice.connection.disconnect(); }
@@ -161,12 +165,27 @@ client.on('messageCreate', (msg) => {
                                 output = msg.content.substring(11)
                             }
                             console.log(output)
-                            streamLivestreamVideo(output,udp,true).then(() => {
-                                udp.mediaConnection.setSpeaking(false)
-                                udp.mediaConnection.setVideoStatus(false)
-                                streamer.leaveVoice()
-                                msg.channel.send('Left voice channel due to end of video, use >connect to add me back.')
-                            })
+                            function stram(output,udp) {
+                                streamLivestreamVideo(output,udp,true).then(() => {
+                                    if (queue[0]) {
+                                        if (!queueing) {
+                                            queueing = true
+                                            msg.channel.send("Stream queue is now active.")
+                                        }
+                                        const qu = queue.reverse()
+                                        setTimeout(() => {
+                                            stram(qu.pop(),udp)
+                                            queue = qu.reverse()
+                                        },2000)
+                                    } else {
+                                        udp.mediaConnection.setSpeaking(false)
+                                        udp.mediaConnection.setVideoStatus(false)
+                                        streamer.leaveVoice()
+                                        msg.channel.send('Left voice channel due to end of video, use >connect to add me back.')
+                                    }
+                                })
+                            }
+                            stram(output,udp)
                         })
                     })
                     msg.reply("Attempted to play video, please wait...")
@@ -225,6 +244,9 @@ client.on('messageCreate', (msg) => {
             stats.bitrate = msgout[3]
             stats.audioBitrate = msgout[4]
             msg.reply('Set resolution and bitrate.')
+        } else if (msg.content.startsWith('>add')) {
+            queue.push(msg.content.substring(5))
+            msg.reply('Added to stream queue, i will break your life if thats an invalid video.')
         }
     } else if (msg.content == '>authorizeChannel') {
         auth.channel.push(msg.channel.id)
