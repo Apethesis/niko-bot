@@ -107,7 +107,7 @@ client.on('messageCreate', (msg) => {
             if (smsg[1]) {
                 skipby = Number(smsg[1])
             }
-            if (!isNaN(skipby) && isFinite(skipby)) { skipby = Math.round(skipby) }
+            if (!isNaN(skipby) && isFinite(skipby)) { skipby = Math.abs(skipby); skipby = Math.round(skipby) }
             if (!isNaN(skipby) && isFinite(skipby) && !isNaN(currentpos) && isFinite(currentpos)) { currentpos = currentpos + skipby }
             if (currentpos > playlist.length) { shuffle();  }
             song.pause()
@@ -202,9 +202,14 @@ client.on('messageCreate', (msg) => {
             msg.reply(ostr)
         } else if (msg.content.startsWith('>volume')) {
             const volu = Number(msg.content.substring(8))
-            song.setVolume(volu)
-            volume = volu
-            msg.reply(`Set volume to ${volu}.`)
+            if (isFinite(volu) && !isNaN(volu)) { 
+                volu = clamp(volu,0,2)
+                song.setVolume(volu)
+                volume = volu
+                msg.reply(`Set volume to ${volu}.`)
+            } else {
+                msg.reply('Invalid number.')
+            }
         } else if (msg.content.startsWith('>setchannel')) {
             const msgout = msg.content.split(" ")
             stats.guild = msgout[1]
