@@ -135,14 +135,14 @@ client.on('messageCreate', (msg) => {
                     streamer.joinVoice(stats.guild,stats.channel).then((rudp) => {
                         let output
                         streamercon = rudp
-                        streamer.createStream({ hardwareAcceleratedDecoding: true, width: 1920, height: 1080, bitrateKbps: 4000, maxBitrateKbps: 4000, videoCodec: "H264", h26xPreset: 'ultrafast' }).then((udp) => {
+                        streamer.createStream({ hardwareAcceleratedDecoding: true, width: 854, height: 480, bitrateKbps: 4000, maxBitrateKbps: 4000, videoCodec: "H264", h26xPreset: 'ultrafast' }).then((udp) => {
                             udp.mediaConnection.setSpeaking(true)
                             udp.mediaConnection.setVideoStatus(true)
                             if (msg.content.substring(11).includes('youtube') || msg.content.substring(11).includes('youtu.be')) {
                                 const nononononononononononono = ytDlpWrap.execStream([
                                     'https://www.youtube.com/watch?v='+msg.content.substring(18),
                                     '-f',
-                                    'best[ext=mp4]'
+                                    'worst[ext=mp4]'
                                 ])
                                 console.log(nononononononononononono)
                                 output = nononononononononononono
