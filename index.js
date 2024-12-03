@@ -181,6 +181,7 @@ client.on('messageCreate', (msg) => {
                                         udp.mediaConnection.setSpeaking(false)
                                         udp.mediaConnection.setVideoStatus(false)
                                         streamer.leaveVoice()
+                                        queueing = false
                                         msg.channel.send('Left voice channel due to end of video, use >connect to add me back.')
                                     }
                                 })
