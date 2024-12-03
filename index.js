@@ -140,7 +140,7 @@ client.on('messageCreate', (msg) => {
                             udp.mediaConnection.setVideoStatus(true)
                             if (msg.content.substring(11).includes('youtube') || msg.content.substring(11).includes('youtu.be')) {
                                 const nononononononononononono = ytDlpWrap.execStream([
-                                    'https://www.youtube.com/watch?v='+msg.content.substring(17),
+                                    'https://www.youtube.com/watch?v='+msg.content.substring(18),
                                     '-f',
                                     'best[ext=mp4]'
                                 ])
