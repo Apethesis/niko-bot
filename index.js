@@ -200,7 +200,7 @@ client.on('messageCreate', (msg) => {
             }
             msg.reply(ostr)
         } else if (msg.content.startsWith('>volume')) {
-            const volu = Number(msg.content.substring(8))
+            let volu = Number(msg.content.substring(8))
             if (isFinite(volu) && !isNaN(volu)) { 
                 volu = clamp(volu,0,2)
                 song.setVolume(volu)
