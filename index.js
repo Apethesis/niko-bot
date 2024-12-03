@@ -15,7 +15,7 @@ const streamer = new Streamer(client)
 let streamercon
 let volume = 0.5
 let currentpos = 0
-let stats = { guild: '616089055532417036', channel: '616089055532417044', res: [114,64], bitrate: 4000 }
+let stats = { guild: '616089055532417036', channel: '616089055532417044', res: [114,64], bitrate: 4000, audioBitrate: 128 }
 let song
 let vid
 let playlist = []
@@ -33,7 +33,8 @@ const auth = {
         '591647452247883806',
         '604725422017740803',
         '882086491105419285',
-        '476057232186933274'
+        '476057232186933274',
+        '887112909782671380'
     ]
 }
 function readfiles() {
@@ -66,9 +67,11 @@ function shuffle() {
     oshuffle(playlist)
 }
 function playnew() {
-    console.log(playlist[currentpos])
-    song = client.voice.connection.playAudio(playlist[currentpos], { volume: volume })
-    client.user.setPresence({ activities: [{ name: path.basename(playlist[currentpos]), type: 'PLAYING' }]})
+    console.log(currentpos)
+    if (currentpos < playlist.length) {
+        song = client.voice.connection.playAudio(playlist[currentpos], { volume: volume })
+        client.user.setPresence({ activities: [{ name: path.basename(playlist[currentpos]), type: 'PLAYING' }]})
+    }
     currentpos = currentpos + 1;
     if (currentpos > playlist.length) {
         shuffle()
@@ -98,7 +101,13 @@ client.once('ready', (cl) => {
 })
 client.on('messageCreate', (msg) => {
     if (auth.user.includes(msg.author.id) && auth.channel.includes(msg.channel.id)) {
-        if (msg.content == '>skipsong') {
+        if (msg.content.startsWith('>skipsong')) {
+            const smsg = msg.content.split(" ")
+            let skipby = 0
+            if (smsg[1]) {
+                skipby = Number(smsg[1])
+            }
+            if (!isNaN(skipby) && isFinite(skipby) && !isNaN(currentpos) && isFinite(currentpos)) { currentpos = currentpos + skipby }
             song.pause()
             msg.reply('Skipped song.')
         } else if (msg.content == '>refreshlist') {
@@ -135,7 +144,7 @@ client.on('messageCreate', (msg) => {
                     streamer.joinVoice(stats.guild,stats.channel).then((rudp) => {
                         let output
                         streamercon = rudp
-                        streamer.createStream({ hardwareAcceleratedDecoding: true, width: stats.res[0], height: stats.res[1], bitrateKbps: stats.bitrate, videoCodec: "H264", h26xPreset: 'ultrafast' }).then((udp) => {
+                        streamer.createStream({ hardwareAcceleratedDecoding: true, width: stats.res[0], height: stats.res[1], bitrateKbps: stats.bitrate, videoCodec: "H264", h26xPreset: 'ultrafast', audioBitrate: stats.audioBitrate }).then((udp) => {
                             udp.mediaConnection.setSpeaking(true)
                             udp.mediaConnection.setVideoStatus(true)
                             if (msg.content.substring(11).includes('youtube') || msg.content.substring(11).includes('youtu.be')) {
@@ -207,6 +216,7 @@ client.on('messageCreate', (msg) => {
             stats.res[0] = msgout[1]
             stats.res[1] = msgout[2]
             stats.bitrate = msgout[3]
+            stats.audioBitrate = msgout[4]
             msg.reply('Set resolution and bitrate.')
         }
     } else if (msg.content == '>authorizeChannel') {
