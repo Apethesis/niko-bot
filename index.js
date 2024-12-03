@@ -135,7 +135,7 @@ client.on('messageCreate', (msg) => {
                     streamer.joinVoice(stats.guild,stats.channel).then((rudp) => {
                         let output
                         streamercon = rudp
-                        streamer.createStream({ hardwareAcceleratedDecoding: true, width: 854, height: 480, bitrateKbps: 4000, maxBitrateKbps: 4000, videoCodec: "H264", h26xPreset: 'ultrafast' }).then((udp) => {
+                        streamer.createStream({ hardwareAcceleratedDecoding: true, width: 854, height: 480, bitrateKbps: 100, maxBitrateKbps: 4000, videoCodec: "H264", h26xPreset: 'ultrafast' }).then((udp) => {
                             udp.mediaConnection.setSpeaking(true)
                             udp.mediaConnection.setVideoStatus(true)
                             if (msg.content.substring(11).includes('youtube') || msg.content.substring(11).includes('youtu.be')) {
