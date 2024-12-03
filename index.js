@@ -108,6 +108,7 @@ client.on('messageCreate', (msg) => {
                 skipby = Number(smsg[1])
             }
             if (!isNaN(skipby) && isFinite(skipby) && !isNaN(currentpos) && isFinite(currentpos)) { currentpos = currentpos + skipby }
+            if (currentpos > playlist.length) { shuffle();  }
             song.pause()
             msg.reply('Skipped song.')
         } else if (msg.content == '>refreshlist') {
