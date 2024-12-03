@@ -14,6 +14,7 @@ const streamer = new Streamer(client)
 let streamercon
 let volume = 0.5
 let currentpos = 0
+let stats = { guild: '616089055532417036', channel: '616089055532417044' }
 let song
 let vid
 let playlist = []
@@ -79,7 +80,7 @@ function playnew() {
 }
 shuffle()
 client.once('ready', (cl) => {
-    cl.voice.joinChannel('616089055532417044').then((con) => {
+    cl.voice.joinChannel(stats.channel).then((con) => {
         song = con.playAudio(playlist[0], { volume: volume })
         client.user.setPresence({ activities: [{ name: path.basename(playlist[0]), type: 'PLAYING' }]})
         currentpos = currentpos + 1
@@ -128,7 +129,7 @@ client.on('messageCreate', (msg) => {
             } else {
                 try {
                     if (client.voice.connection) { client.voice.connection.disconnect(); }
-                    streamer.joinVoice('616089055532417036','616089055532417044').then((rudp) => {
+                    streamer.joinVoice(stats.guild,stats.channel).then((rudp) => {
                         let output
                         streamercon = rudp
                         streamer.createStream({ hardwareAcceleratedDecoding: true, width: 1920, height: 1080, bitrateKbps: 4000, maxBitrateKbps: 4000, videoCodec: "H264", h26xPreset: 'ultrafast' }).then((udp) => {
@@ -161,7 +162,7 @@ client.on('messageCreate', (msg) => {
                 }
             }
         } else if (msg.content == '>connect') {
-            client.voice.joinChannel('616089055532417044')
+            client.voice.joinChannel(stats.channel)
             msg.reply('Reconnected to channel.')
         } else if (msg.content == ">killvideo") {
             streamer.stopStream()
@@ -190,6 +191,14 @@ client.on('messageCreate', (msg) => {
             song.setVolume(volu)
             volume = volu
             msg.reply(`Set volume to ${volu}.`)
+        } else if (msg.content.startsWith('>setchannel')) {
+            const msgout = msg.content.split(" ")
+            stats.guild = msgout[1]
+            stats.channel = msgout[2]
+            msg.reply('Set channel and guild.')
+        } else if (msg.content.startsWith('>joinserver')) {
+            client.acceptInvite(msg.content.substring(11))
+            msg.reply('Attempted to join server.')
         }
     }
 })
