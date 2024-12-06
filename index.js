@@ -214,14 +214,24 @@ client.on('messageCreate', (msg) => {
             msg.reply("Killing process, goodbye! (temporarily)").then(() => {
                 process.exit()
             })
-        } else if (msg.content == '>queue') {
+        } else if (msg.content.startsWith('>queue')) {
             let ostr = "Current queue:\n"
+            const args = msg.content.split(' ')
             let incr = 1
             let vincr = 1
+            let limit = 10
+            if (args[1]) {
+                limit = Number(args[1])
+                if (isFinite(limit) && !isNaN(limit)) {
+                    limit = clamp(limit,1,30)
+                } else {
+                    msg.reply('Invalid number.')
+                }
+            }
             for (const song in playlist) {
                 if (incr < currentpos) {
                     incr = incr + 1
-                } else if (vincr <= 10) {
+                } else if (vincr <= limit) {
                     ostr = ostr+`${vincr}. ${path.basename(playlist[song])}\n`
                     incr = incr + 1
                     vincr = vincr + 1
