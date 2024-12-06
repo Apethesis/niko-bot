@@ -6,6 +6,7 @@ const { open } = require('node:fs/promises');
 const YTDlpWrap = require('yt-dlp-wrap').default;
 const clamp = (val, min, max) => Math.min(Math.max(val, min), max)
 const ytDlpWrap = new YTDlpWrap('yt-dlp');
+const { createReadableStreamFromReadable } = require('@remix-run/node');
 const stream = require('stream')
 const process = require('node:process')
 const fs = require('fs');
@@ -16,7 +17,7 @@ const streamer = new Streamer(client)
 let streamercon
 let volume = 0.5
 let currentpos = 0
-let stats = { guild: '616089055532417036', channel: '616089055532417044', res: [114,64], bitrate: 64 }
+let stats = { guild: '1060949240546857000', channel: '1060949241251512427', res: [114,64], bitrate: 64 }
 let song
 let vid
 let playlist = []
@@ -187,9 +188,6 @@ client.on('messageCreate', (msg) => {
                                             queue = qu.reverse()
                                         },2000)
                                     } else {
-                                        udp.mediaConnection.setSpeaking(false)
-                                        udp.mediaConnection.setVideoStatus(false)
-                                        streamer.leaveVoice()
                                         queueing = false
                                         msg.channel.send('Left voice channel due to end of video, use >connect to add me back.')
                                     }
@@ -283,5 +281,8 @@ client.on('messageCreate', (msg) => {
         auth.channel.push(msg.channel.id)
         msg.reply('Added channel to authorized channel list, this is valid for only this session.')
     }
+})
+client.on('messageReactionAdd',(reaction,user) => {
+
 })
 client.login(process.env.DTOK)
