@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client } = require('discord.js-selfbot-v13');
+const { Client, MessageEmbed } = require('discord.js-selfbot-v13');
 const { Streamer, streamLivestreamVideo } = require('@dank074/discord-video-stream')
 const { spawn } = require('child_process');
 const { open } = require('node:fs/promises');
@@ -12,6 +12,7 @@ const fs = require('fs');
 const path = require('node:path');
 const client = new Client();
 const streamer = new Streamer(client)
+// const partjson = JSON.parse(fs.readFileSync("partdata.json"))
 let streamercon
 let volume = 0.5
 let currentpos = 0
@@ -21,6 +22,7 @@ let vid
 let playlist = []
 let quitit = false
 let queueing = false 
+let loop = false
 let queue = []
 const auth = {
     channel: [
@@ -37,7 +39,8 @@ const auth = {
         '604725422017740803',
         '882086491105419285',
         '476057232186933274',
-        '887112909782671380'
+        '887112909782671380',
+        '554717539935060028'
     ]
 }
 function readfiles() {
@@ -95,7 +98,11 @@ client.once('ready', (cl) => {
         currentpos = currentpos + 1
         if (!quitit) {
             song.on('speaking', (which) => {
-                if (which == false && !quitit) {
+                if (which == false) { console.log(loop,currentpos,currentpos-2) }
+                if (loop && !which && !quitit) {
+                    currentpos = currentpos - 2
+                    playnew()
+                } else if (which == false && !quitit) {
                     playnew()
                 }
             })
@@ -110,9 +117,9 @@ client.on('messageCreate', (msg) => {
             if (smsg[1]) {
                 skipby = Number(smsg[1])
             }
-            if (!isNaN(skipby) && isFinite(skipby)) { skipby = Math.abs(skipby); skipby = Math.round(skipby) }
+            if (!isNaN(skipby) && isFinite(skipby)) { skipby = clamp(skipby,-2,30); skipby = Math.round(skipby) }
             if (!isNaN(skipby) && isFinite(skipby) && !isNaN(currentpos) && isFinite(currentpos)) { currentpos = currentpos + skipby }
-            if (currentpos > playlist.length) { shuffle();  }
+            if (currentpos > playlist.length || currentpos < 0) { shuffle();  }
             song.pause()
             msg.reply('Skipped song.')
         } else if (msg.content == '>refreshlist') {
@@ -249,6 +256,15 @@ client.on('messageCreate', (msg) => {
         } else if (msg.content.startsWith('>add')) {
             queue.push(msg.content.substring(5))
             msg.reply('Added to stream queue, i will break your life if thats an invalid video.')
+        } else if (msg.content == '>loop') {
+            if (loop) {
+                loop = false
+            } else {
+                loop = true
+            }
+            msg.reply('Toggled loop.')
+        } else if (msg.content == ">queuelength") {
+            msg.reply(`Total: ${playlist.length}\nRemaining: ${playlist.length-currentpos}`)
         }
     } else if (msg.content == '>authorizeChannel') {
         auth.channel.push(msg.channel.id)
