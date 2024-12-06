@@ -274,7 +274,9 @@ client.on('messageCreate', (msg) => {
             }
             msg.reply('Toggled loop.')
         } else if (msg.content == ">queuelength") {
-            msg.reply(`Total: ${playlist.length}\nRemaining: ${playlist.length-currentpos}`)
+            msg.reply(`Total: ${playlist.length}\nRemaining: ${playlist.length-(currentpos-1)}`)
+        } else if (msg.content == ">playing") {
+            msg.reply("Playing song: "+path.basename(playlist[currentpos-1]))
         }
     } else if (msg.content == '>authorizeChannel') {
         auth.channel.push(msg.channel.id)
