@@ -17,7 +17,7 @@ const streamer = new Streamer(client)
 let streamercon
 let volume = 0.5
 let currentpos = 0
-let stats = { guild: '1060949240546857000', channel: '1060949241251512427', res: [114,64], bitrate: 64 }
+let stats = { guild: '616089055532417036', channel: '616089055532417044', res: [114,64], bitrate: 64 }
 let song
 let vid
 let playlist = []
@@ -37,7 +37,6 @@ const auth = {
         '1168868176189198418',
         '665113328577806336',
         '825476927284445254',
-        '591647452247883806',
         '604725422017740803',
         '882086491105419285',
         '476057232186933274',
@@ -86,7 +85,10 @@ function playnew() {
     }
     if (!quitit) {
         song.on('speaking', (which) => {
-            if (which == false) {
+            if (loop && !which && !quitit) {
+                currentpos = currentpos - 1
+                playnew()
+            } else if (which == false && !quitit) {
                 playnew()
             }
         })
@@ -100,9 +102,8 @@ client.once('ready', (cl) => {
         currentpos = currentpos + 1
         if (!quitit) {
             song.on('speaking', (which) => {
-                if (which == false) { console.log(loop,currentpos,currentpos-2) }
                 if (loop && !which && !quitit) {
-                    currentpos = currentpos - 2
+                    currentpos = currentpos - 1
                     playnew()
                 } else if (which == false && !quitit) {
                     playnew()
@@ -213,7 +214,7 @@ client.on('messageCreate', (msg) => {
             msg.reply("Killing process, goodbye! (temporarily)").then(() => {
                 process.exit()
             })
-        } else if (msg.content.startsWith('>queue')) {
+        } else if (msg.content.startsWith('>queue') && !msg.content.startsWith('>queuelength')) {
             let ostr = "Current queue:\n"
             const args = msg.content.split(' ')
             let incr = 1
