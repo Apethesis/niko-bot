@@ -17,20 +17,22 @@ const streamer = new Streamer(client)
 let streamercon
 let volume = 0.5
 let currentpos = 0
-let stats = { guild: '616089055532417036', channel: '616089055532417044', res: [114,64], bitrate: 64 }
+let stats = { guild: '616089055532417036', channel: '616089055532417044', res: [1280,720], bitrate: 2000 }
 let song
 let vid
 let playlist = []
 let quitit = false
 let queueing = false 
 let loop = false
+let type = "webm"
 let queue = []
 const auth = {
     channel: [
         '662095345366335518',
         '949506704926728202',
         '616089055532417044',
-        '1188519853221478460'
+        '1188519853221478460',
+        '1195908724456444037'
     ],
     user: [
         '939920548484497451',
@@ -73,6 +75,44 @@ function shuffle() {
     currentpos = 0;
     oshuffle(playlist)
 }
+function convert(file,to,msg) {
+    console.log(file,to)
+    const ffmpeg = spawn('ffmpeg', ["-i",file,'-vcodec','libx264',to])
+    msg.channel.send('Converting video, this may take a while.')
+    ffmpeg.on('error', (err) => {
+        console.log(err)
+        msg.channel.send('Failed to convert video to webm. (CHECK LOGS)')
+    })
+    ffmpeg.stdout.on('data', (data) => {
+        console.log(data.toString())
+    });
+    ffmpeg.stderr.on('data', (data) => {
+        console.log(data.toString()) 
+    });
+    return ffmpeg
+}
+function ytdlp(link, msg) {
+    fs.rm(path.join(__dirname,'ytdltemp.webm'), (err) => {
+        console.log(err);
+    })
+    fs.rm(path.join(__dirname,'ytdltemp.webm.mp4'), (err) => {
+        console.log(err);
+    })
+    const ytdlp = spawn('yt-dlp', ['-S','vcodec:h264','-f','bestvideo[height<=720][ext=webm]+bestaudio[ext=webm]/bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]',link,'-o',path.join(__dirname,'ytdltemp.webm')])
+    ytdlp.on('error', (err) => {
+        console.log(err)
+        msg.channel.send('Failed to download video. (CHECK LOGS)')
+    });
+    ytdlp.stdout.on('data', (data) => {
+        if (data.includes('mp4')) { type = "webm.mp4" }
+        console.log(data.toString())
+    });
+    ytdlp.stderr.on('data', (data) => {
+        if (data.includes('mp4')) { type = "webm.mp4" }
+        console.log(data.toString()) 
+    });
+    return ytdlp
+}
 function playnew() {
     console.log(currentpos)
     if (currentpos < playlist.length) {
@@ -95,6 +135,13 @@ function playnew() {
     }
 }
 shuffle()
+const rdata = JSON.parse(fs.readFileSync(path.join(__dirname,'niko_relations.json')))
+const outputobj = []
+for (const dat in rdata) {
+    outputobj.push({ "role": "user", "content": rdata[dat].question })
+    outputobj.push({ "role": "assistant", "content": rdata[dat].response })
+}
+fs.writeFileSync(path.join(__dirname,'finedata.json'),JSON.stringify(outputobj))
 client.once('ready', (cl) => {
     cl.voice.joinChannel(stats.channel).then((con) => {
         song = con.playAudio(playlist[0], { volume: volume })
@@ -161,23 +208,21 @@ client.on('messageCreate', (msg) => {
                     streamer.joinVoice(stats.guild,stats.channel).then((rudp) => {
                         let output
                         streamercon = rudp
-                        streamer.createStream({ hardwareAcceleratedDecoding: true, width: stats.res[0], height: stats.res[1], bitrateKbps: stats.bitrate, videoCodec: "H264", h26xPreset: 'ultrafast', audioBitrate: stats.audioBitrate }).then((udp) => {
-                            udp.mediaConnection.setSpeaking(true)
-                            udp.mediaConnection.setVideoStatus(true)
-                            if (msg.content.substring(11).includes('youtube') || msg.content.substring(11).includes('youtu.be')) {
-                                const nononononononononononono = ytDlpWrap.execStream([
-                                    'https://www.youtube.com/watch?v='+msg.content.substring(18),
-                                    '-f',
-                                    'worst[ext=mp4]'
-                                ])
-                                console.log(nononononononononononono)
-                                output = nononononononononononono
-                            } else {
-                                output = msg.content.substring(11)
-                            }
+                        let yt = false
+                        function stram(output) {
+                            console.log('hello?')
                             console.log(output)
-                            function stram(output,udp) {
+                            streamer.createStream({ hardwareAcceleratedDecoding: true, width: stats.res[0], height: stats.res[1], bitrateKbps: stats.bitrate, videoCodec: "H264", h26xPreset: 'ultrafast', audioBitrate: stats.audioBitrate }).then((udp) => {
+                                console.log('are you still there?')
+                                udp.mediaConnection.setSpeaking(true)
+                                udp.mediaConnection.setVideoStatus(true)
                                 streamLivestreamVideo(output,udp,true).then(() => {
+                                    if (yt) {
+                                        fs.rm(path.join(__dirname,'ytdltemp.'+type), (err) => {
+                                            console.log(err);
+                                        })
+                                        type = "webm"
+                                    }
                                     if (queue[0]) {
                                         if (!queueing) {
                                             queueing = true
@@ -192,16 +237,46 @@ client.on('messageCreate', (msg) => {
                                         queueing = false
                                         msg.channel.send('Left voice channel due to end of video, use >connect to add me back.')
                                     }
+                                }).catch((reson) => {
+                                    console.log(reson)
                                 })
-                            }
-                            stram(output,udp)
-                        })
+                            })
+                        }
+                        if (msg.content.substring(11).includes('youtube') || msg.content.substring(11).includes('youtu.be')) {
+                            msg.channel.send('Attempting to download video...'); yt = true
+                            const ytdlpd = ytdlp(msg.content.substring(18),msg)
+                            ytdlpd.on('exit', () => {
+                                console.log(type)
+                                if (type == "webm.mp4") {
+                                    fs.cp(path.join(__dirname,'ytdltemp.'+type),path.join(__dirname,'ytdltemp.mp4'), (err) => {
+                                        console.log(err)
+                                        fs.rm(path.join(__dirname,'ytdltemp.'+type), (err) => {
+                                            console.log(err);
+                                        })
+                                        type = "mp4"
+                                        output = path.join(__dirname,'ytdltemp.'+type)
+                                        stram(output,rudp)
+                                        /*convert(path.join(__dirname,'ytdltemp.'+type),path.join(__dirname,'ytdltemp.webm'),msg).on('exit', () => {
+                                            fs.rm(path.join(__dirname,'ytdltemp.'+type), (err) => {
+                                                console.log(err);
+                                            })
+                                            type = 'webm'; output = path.join(__dirname,'ytdltemp.'+type)
+                                            stram(output,rudp)
+                                        })*/
+                                    })
+                                } else {
+                                    stram(output,rudp)
+                                }
+                            })
+                        } else {
+                            output = msg.content.substring(11)
+                            stram(output,rudp)
+                        }
                     })
-                    msg.reply("Attempted to play video, please wait...")
-                } catch (error) {
-                    msg.channel.send('Errored! Potentially an invalid link? (CHECK LOGS)')
-                    console.log(error)
+                } catch (e) {
+                    console.log(e)
                 }
+                msg.reply("Attempted to play video, please wait...")
             }
         } else if (msg.content == '>connect') {
             client.voice.joinChannel(stats.channel)
@@ -281,6 +356,8 @@ client.on('messageCreate', (msg) => {
     } else if (msg.content == '>authorizeChannel') {
         auth.channel.push(msg.channel.id)
         msg.reply('Added channel to authorized channel list, this is valid for only this session.')
+    } else if (msg.content == ">pingtciformeihatethisstupidfuckingemote") {
+        msg.channel.send("<@427111069866000386>")
     }
 })
 client.on('messageReactionAdd',(reaction,user) => {
