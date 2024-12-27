@@ -128,3 +128,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+ytdltemp.webm
+ytdltemp.mp4
+ytdltemp.webm.mp4

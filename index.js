@@ -17,7 +17,7 @@ const streamer = new Streamer(client)
 let streamercon
 let volume = 0.5
 let currentpos = 0
-let stats = { guild: '616089055532417036', channel: '616089055532417044', res: [1280,720], bitrate: 2000 }
+let stats = { guild: '1060949240546857000', channel: '1317254569314484315', res: [1280,720], bitrate: 2000 }
 let song
 let vid
 let playlist = []
@@ -32,7 +32,8 @@ const auth = {
         '949506704926728202',
         '616089055532417044',
         '1188519853221478460',
-        '1195908724456444037'
+        '1195908724456444037',
+	'1176719479158341633'
     ],
     user: [
         '939920548484497451',
@@ -70,10 +71,13 @@ function oshuffle(array) {
       [array[currentIndex], array[randomIndex]] = [
         array[randomIndex], array[currentIndex]];
     }
-  }
+}
 function shuffle() {
     currentpos = 0;
     oshuffle(playlist)
+    if (client && client.voice && client.voice.connection && client.voice.connection.playAudio) {
+        playnew()
+    }
 }
 function convert(file,to,msg) {
     console.log(file,to)
@@ -204,9 +208,9 @@ client.on('messageCreate', (msg) => {
                 msg.reply('This command is disabled while stream queueing is active, use >add instead.')
             } else {
                 try {
+                    let output = path.join(__dirname,"ytdltemp."+type)
                     if (client.voice.connection) { client.voice.connection.disconnect(); }
                     streamer.joinVoice(stats.guild,stats.channel).then((rudp) => {
-                        let output
                         streamercon = rudp
                         let yt = false
                         function stram(output) {
@@ -246,7 +250,7 @@ client.on('messageCreate', (msg) => {
                             msg.channel.send('Attempting to download video...'); yt = true
                             const ytdlpd = ytdlp(msg.content.substring(18),msg)
                             ytdlpd.on('exit', () => {
-                                console.log(type)
+                                console.log(type); console.log(output)
                                 if (type == "webm.mp4") {
                                     fs.cp(path.join(__dirname,'ytdltemp.'+type),path.join(__dirname,'ytdltemp.mp4'), (err) => {
                                         console.log(err)
@@ -254,7 +258,7 @@ client.on('messageCreate', (msg) => {
                                             console.log(err);
                                         })
                                         type = "mp4"
-                                        output = path.join(__dirname,'ytdltemp.'+type)
+                                        output = path.join(__dirname,'ytdltemp.'+type); console.log(output, path.join(__dirname,'ytdltemp.'+type))
                                         stram(output,rudp)
                                         /*convert(path.join(__dirname,'ytdltemp.'+type),path.join(__dirname,'ytdltemp.webm'),msg).on('exit', () => {
                                             fs.rm(path.join(__dirname,'ytdltemp.'+type), (err) => {
@@ -265,6 +269,7 @@ client.on('messageCreate', (msg) => {
                                         })*/
                                     })
                                 } else {
+                                    console.log(output)
                                     stram(output,rudp)
                                 }
                             })
