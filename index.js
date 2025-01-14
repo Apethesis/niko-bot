@@ -17,7 +17,7 @@ const streamer = new Streamer(client)
 let streamercon
 let volume = 0.5
 let currentpos = 0
-let stats = { guild: '1060949240546857000', channel: '1317254569314484315', res: [1280,720], bitrate: 2000 }
+let stats = { guild: '1328460072736653312', channel: '1328460072736653316', res: [1280,720], bitrate: 2000 }
 let song
 let vid
 let playlist = []
@@ -33,7 +33,9 @@ const auth = {
         '616089055532417044',
         '1188519853221478460',
         '1195908724456444037',
-	'1176719479158341633'
+	    '1176719479158341633',
+        '1328460072736653315',
+        '1328460072736653316'
     ],
     user: [
         '939920548484497451',
