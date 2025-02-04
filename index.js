@@ -17,7 +17,7 @@ const streamer = new Streamer(client)
 let streamercon
 let volume = 0.5
 let currentpos = 0
-let stats = { guild: '1328460072736653312', channel: '1328460072736653316', res: [1280,720], bitrate: 2000 }
+let stats = { guild: '755146661482725408', channel: '1223772159889899532', res: [1280,720], bitrate: 2000 }
 let song
 let vid
 let playlist = []
@@ -35,7 +35,10 @@ const auth = {
         '1195908724456444037',
 	    '1176719479158341633',
         '1328460072736653315',
-        '1328460072736653316'
+        '1328460072736653316',
+        '1223772159889899532',
+        '1223768216128720926',
+        '1234201708033216643'
     ],
     user: [
         '939920548484497451',
@@ -104,7 +107,7 @@ function ytdlp(link, msg) {
     fs.rm(path.join(__dirname,'ytdltemp.webm.mp4'), (err) => {
         console.log(err);
     })
-    const ytdlp = spawn('yt-dlp', ['-S','vcodec:h264','-f','bestvideo[height<=720][ext=webm]+bestaudio[ext=webm]/bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]',link,'-o',path.join(__dirname,'ytdltemp.webm')])
+    const ytdlp = spawn('yt-dlp', ['-S','vcodec:h264','-f','bestvideo[height<='+stats["res"][1]+'][ext=webm]+bestaudio[ext=webm]/bestvideo[height<='+stats["res"][1]+'][ext=mp4]+bestaudio[ext=m4a]',link,'-o',path.join(__dirname,'ytdltemp.webm')])
     ytdlp.on('error', (err) => {
         console.log(err)
         msg.channel.send('Failed to download video. (CHECK LOGS)')
