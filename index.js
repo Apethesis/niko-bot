@@ -222,7 +222,7 @@ client.on('messageCreate', (msg) => {
                         function stram(output) {
                             console.log('hello?')
                             console.log(output)
-                            streamer.createStream({ hardwareAcceleratedDecoding: true, width: stats.res[0], height: stats.res[1], bitrateKbps: stats.bitrate, videoCodec: "H264", h26xPreset: 'ultrafast', audioBitrate: stats.audioBitrate }).then((udp) => {
+                            streamer.createStream({ width: stats.res[0], height: stats.res[1], bitrateKbps: stats.bitrate, videoCodec: "H264", h26xPreset: 'ultrafast', audioBitrate: stats.audioBitrate }).then((udp) => {
                                 console.log('are you still there?')
                                 udp.mediaConnection.setSpeaking(true)
                                 udp.mediaConnection.setVideoStatus(true)
