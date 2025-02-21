@@ -181,37 +181,37 @@ client.on('messageCreate', (msg) => {
             if (!isNaN(skipby) && isFinite(skipby) && !isNaN(currentpos) && isFinite(currentpos)) { currentpos = currentpos + skipby }
             if (currentpos > playlist.length || currentpos < 0) { shuffle();  }
             song.pause()
-            msg.reply('Skipped song.')
+            msg.reply('Skipped song.').catch(() => {})
         } else if (msg.content == '>refreshlist') {
             readfiles()
-            msg.reply('Refreshed file list.')
+            msg.reply('Refreshed file list.').catch(() => {})
         } else if (msg.content == '>shuffle') {
             shuffle()
             song.pause()
-            msg.reply('Shuffled list and skipped current song.')
+            msg.reply('Shuffled list and skipped current song.').catch(() => {})
         } else if (msg.content == '>restartsong') {
             currentpos--
             song.pause()
-            msg.reply('Restarted current song.')
+            msg.reply('Restarted current song.').catch(() => {})
         } else if (msg.content == '>gitrefresh') {
             const git = spawn('git', ['pull'])
             git.on('close', (code) => {
                 readfiles()
-                msg.reply('Pulled from github and read new files. Consider shuffling.')
+                msg.reply('Pulled from github and read new files. Consider shuffling.').catch(() => {})
             })
         } else if (msg.content == ">pause") {
             quitit = true
             song.pause()
-            msg.reply('This song will not continue the playlist after it.')
+            msg.reply('This song will not continue the playlist after it.').catch(() => {})
         } else if (msg.content == ">resume") {
             quitit = false
             playnew()
             msg.reply('Resumed.')
         } else if (msg.content.startsWith(">playvideo")) {
             if (!quitit) {
-                msg.reply('This feature requires the playlist to be paused.')
+                msg.reply('This feature requires the playlist to be paused.').catch(() => {})
             } else if (queueing) {
-                msg.reply('This command is disabled while stream queueing is active, use >add instead.')
+                msg.reply('This command is disabled while stream queueing is active, use >add instead.').catch(() => {})
             } else {
                 try {
                     let output = path.join(__dirname,"ytdltemp."+type)
@@ -236,7 +236,7 @@ client.on('messageCreate', (msg) => {
                                     if (queue[0]) {
                                         if (!queueing) {
                                             queueing = true
-                                            msg.channel.send("Stream queue is now active.")
+                                            msg.channel.send("Stream queue is now active.").catch(() => {})
                                         }
                                         const qu = queue.reverse()
                                         setTimeout(() => {
@@ -245,7 +245,7 @@ client.on('messageCreate', (msg) => {
                                         },2000)
                                     } else {
                                         queueing = false
-                                        msg.channel.send('Left voice channel due to end of video, use >connect to add me back.')
+                                        msg.channel.send('Left voice channel due to end of video, use >connect to add me back.').catch(() => {})
                                     }
                                 }).catch((reson) => {
                                     console.log(reson)
@@ -253,7 +253,7 @@ client.on('messageCreate', (msg) => {
                             })
                         }
                         if (msg.content.substring(11).includes('youtube') || msg.content.substring(11).includes('youtu.be')) {
-                            msg.channel.send('Attempting to download video...'); yt = true
+                            msg.channel.send('Attempting to download video...').catch(() => {}); yt = true
                             const ytdlpd = ytdlp(msg.content.substring(18),msg)
                             ytdlpd.on('exit', () => {
                                 console.log(type); console.log(output)
@@ -287,19 +287,19 @@ client.on('messageCreate', (msg) => {
                 } catch (e) {
                     console.log(e)
                 }
-                msg.reply("Attempted to play video, please wait...")
+                msg.reply("Attempted to play video, please wait...").catch(() => {})
             }
         } else if (msg.content == '>connect') {
             client.voice.joinChannel(stats.channel)
-            msg.reply('Reconnected to channel.')
+            msg.reply('Reconnected to channel.').catch(() => {})
         } else if (msg.content == ">killvideo") {
             streamer.stopStream()
             streamer.leaveVoice()
-            msg.reply('Left voice channel due to killvideo command, use >connect to add me back.')
+            msg.reply('Left voice channel due to killvideo command, use >connect to add me back.').catch(() => {})
         } else if (msg.content == '>kill' && msg.author.id == '1168868176189198418') {
             msg.reply("Killing process, goodbye! (temporarily)").then(() => {
                 process.exit()
-            })
+            }).catch(() => { process.exit() })
         } else if (msg.content.startsWith('>queue') && !msg.content.startsWith('>queuelength')) {
             let ostr = "Current queue:\n"
             const args = msg.content.split(' ')
@@ -311,7 +311,7 @@ client.on('messageCreate', (msg) => {
                 if (isFinite(limit) && !isNaN(limit)) {
                     limit = clamp(limit,1,30)
                 } else {
-                    msg.reply('Invalid number.')
+                    msg.reply('Invalid number.').catch(() => {})
                 }
             }
             for (const song in playlist) {
@@ -330,45 +330,45 @@ client.on('messageCreate', (msg) => {
                 volu = clamp(volu,0,2)
                 song.setVolume(volu)
                 volume = volu
-                msg.reply(`Set volume to ${volu}.`)
+                msg.reply(`Set volume to ${volu}.`).catch(() => {})
             } else {
-                msg.reply('Invalid number.')
+                msg.reply('Invalid number.').catch(() => {})
             }
         } else if (msg.content.startsWith('>setchannel')) {
             const msgout = msg.content.split(" ")
             stats.guild = msgout[1]
             stats.channel = msgout[2]
-            msg.reply('Set channel and guild.')
+            msg.reply('Set channel and guild.').catch(() => {})
         } else if (msg.content.startsWith('>joinserver')) {
             client.acceptInvite(msg.content.substring(11))
-            msg.reply('Attempted to join server.')
+            msg.reply('Attempted to join server.').catch(() => {})
         } else if (msg.content.startsWith('>changeres')) {
             const msgout = msg.content.split(" ")
             stats.res[0] = msgout[1]
             stats.res[1] = msgout[2]
             stats.bitrate = msgout[3]
             stats.audioBitrate = msgout[4]
-            msg.reply('Set resolution and bitrate.')
+            msg.reply('Set resolution and bitrate.').catch(() => {})
         } else if (msg.content.startsWith('>add')) {
             queue.push(msg.content.substring(5))
-            msg.reply('Added to stream queue, i will break your life if thats an invalid video.')
+            msg.reply('Added to stream queue, i will break your life if thats an invalid video.').catch(() => {})
         } else if (msg.content == '>loop') {
             if (loop) {
                 loop = false
             } else {
                 loop = true
             }
-            msg.reply('Toggled loop.')
+            msg.reply('Toggled loop.').catch(() => {})
         } else if (msg.content == ">queuelength") {
-            msg.reply(`Total: ${playlist.length}\nRemaining: ${playlist.length-(currentpos-1)}`)
+            msg.reply(`Total: ${playlist.length}\nRemaining: ${playlist.length-(currentpos-1)}`).catch(() => {})
         } else if (msg.content == ">playing") {
-            msg.reply("Playing song: "+path.basename(playlist[currentpos-1]))
+            msg.reply("Playing song: "+path.basename(playlist[currentpos-1])).catch(() => {})
         }
     } else if (msg.content == '>authorizeChannel') {
         auth.channel.push(msg.channel.id)
-        msg.reply('Added channel to authorized channel list, this is valid for only this session.')
+        msg.reply('Added channel to authorized channel list, this is valid for only this session.').catch(() => {})
     } else if (msg.content == ">pingtciformeihatethisstupidfuckingemote") {
-        msg.channel.send("<@427111069866000386>")
+        msg.channel.send("<@427111069866000386>").catch(() => {})
     }
 })
 client.on('messageReactionAdd',(reaction,user) => {
